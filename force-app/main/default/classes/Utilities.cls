@@ -20,8 +20,6 @@ public inherited sharing class Utilities {
         return pickListValuesList;
     }
 
-
-
-   
+    
 
 }
