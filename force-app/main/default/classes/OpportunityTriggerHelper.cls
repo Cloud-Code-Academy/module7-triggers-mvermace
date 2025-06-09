@@ -1,10 +1,5 @@
 public with sharing class OpportunityTriggerHelper {
     
-    // Constructor if we need it....
-    public OpportunityTriggerHelper() {
-
-    }
-
     public static void validateOppAmount(List<Opportunity> oppTriggerNew) {
         for (Opportunity opp : oppTriggerNew) {
             Double minOpp = 5000;
@@ -17,7 +12,6 @@ public with sharing class OpportunityTriggerHelper {
     public static void preventDeleteClosedWonBanking(List<Opportunity> oppTriggerOld) {
         // Must run 'extra' query to find Account.Industry.
         List<Opportunity> oppList = [SELECT Id, Name, Amount, StageName, Account.Industry FROM Opportunity WHERE Id IN :oppTriggerOld];
-        System.debug('***** oppList size: ' + String.valueOf(oppList.size()));
         for (Opportunity opp : oppList) {
             if (opp.StageName == 'Closed Won' && opp.Account.Industry == 'Banking') {
                 // opp.Id.addError('<message>') does not work.
@@ -37,7 +31,8 @@ public with sharing class OpportunityTriggerHelper {
             }
         }
         // Now build a List<Contact> to hold Contacts with AccountIds in Trigger.New and Title = 'CEO' 
-        List<Contact> ceoContacts = [SELECT Id, FirstName, LastName, Title, AccountId FROM Contact WHERE AccountId IN :oppAccountIdSet AND Title = 'CEO'];
+        String contactTitle = 'CEO';
+        List<Contact> ceoContacts = [SELECT Id, FirstName, LastName, Title, AccountId FROM Contact WHERE AccountId IN :oppAccountIdSet AND Title = :contactTitle];
         // Build a Map<> of key=AccountId, value=ContactId using (filtered) List<Contact>
         Map<String,String> acctIdToContactIdMap = new Map<String,String>();
         for (Contact cont : ceoContacts) {
@@ -49,4 +44,4 @@ public with sharing class OpportunityTriggerHelper {
         }
     }
 
-}
+} 
